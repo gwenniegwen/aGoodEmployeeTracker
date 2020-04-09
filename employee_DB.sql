@@ -1,6 +1,6 @@
 CREATE DATABASE employee_db;
 
-USE employee_DB;
+USE employee_db;
 
 CREATE TABLE department(
 id INTEGER AUTO_INCREMENT NOT NULL,

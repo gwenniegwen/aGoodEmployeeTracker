@@ -14,7 +14,7 @@ var connection = mysql.createConnection({
 
     // Your password
     password: "@LightWork1",
-    database: "employee_DB"
+    database: "employee_db"
 });
 
 // connect to the mysql server and sql database
@@ -46,15 +46,15 @@ function start() {
         .then(function (answer) {
             switch (answer.userChoice) {
 
-                case "View All Employees":
+                case "View Employees":
                     viewAll();
                     break;
 
-                case "View All Employees By Department":
+                case "View Department":
                     viewDepartment();
                     break;
 
-                case "View Employees By Role":
+                case "View Role":
                     viewRole();
                     break;
 
@@ -80,31 +80,112 @@ function start() {
             }
         });
 }
-function viewAll() {
+// function viewAll() {
+//     const query = "SELECT * FROM employee"
+//     connection.query(query, function (err, res) {
+//         if (err)
+//             throw err
 
+
+//         })
+//         .then(function (answer) {
+
+//             console.log(answer)
+
+//         })
+//     }
+const viewAll = () => {
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, employee.manager_id AS manager FROM employee_db.employee LEFT JOIN employee_db.role On employee.role_id = role.id LEFT JOIN employee_db.department ON role.department_id = department.id",
+        function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            start();
+        });
 }
+
+
 function viewDepartment() {
+    const query = "SELECT * FROM department"
+    connection.query(query, function (err, res) {
+        if (err)
+            throw err
 
-    inquirer
-        .prompt({
-            name: "userSelection",
-            type: "input",
-            message: "Select the Department you wish to view"
-        })
-        .then(function (answer) {
-            let query = "SELECT "
-            connection.query(query, function (err, res) {
-                if (err) 
-                throw err
-                
-                console.table(res);
-                start()
+        // console.table(res);
+        const choices = res.map(row => row.name)
+        inquirer
+            .prompt({
+                name: "userSelection",
+                type: "checkbox",
+                message: "Select the Department you wish to view",
+                choices: choices,
             })
-        })
-}
-function viewRole() { }
-function addEmployee(); { }
-function addDepartment() { }
-function addRole() { }
-function updateEmployee() { }
+            .then(function (answer) {
+                const displayData = res.filter(row => answer.userSelection.includes(row.name))
+                console.table(displayData)
+                // connection.query(query, function (err, res) {
+                //     if (err)
+                //         throw err
 
+                //     console.table(res);
+                //     start()
+                // })
+            })
+    })
+}
+const viewRole = () => {
+
+    connection.query("SELECT * FROM role", function (err, res) {
+        if (err) throw err;
+        console.table(res);
+
+        start();
+    });
+}
+
+
+function addEmployee() {
+    const query = "SELECT * FROM role"
+    connection.query(query, function (err, res) {
+        if (err)
+            throw err
+
+        // console.table(res);
+        const choices = res.map(row => row.title)
+        inquirer
+            .prompt([{
+                name: "firstName",
+                type: "input",
+                message: "What is the first name of the employee you wish to add"
+            },
+
+                {
+                    name: "lastName",
+                    type: "input",
+                    message: "What is the last name of the employee you wish to add"
+                },
+
+                {
+                    name: "employeeRole",
+                    type: "list",
+                    message: "What is the role of the employee you wish to add",
+                    choices: choices
+                }
+            ]).then(function (answer) {
+              console.table(answer)
+              const query = "INSERT * INTO role"
+              connection.query(query, function (err, res) {
+                  if (err)
+                      throw err
+            })
+            
+
+    })
+    }
+
+// function addDepartment() { }
+// function addRole() { }
+// function updateEmployee() { }
+
+//create a question spefic to managers
+//.then would return a conditional (if/else)
+//what is the role of the employee you wish to add?
